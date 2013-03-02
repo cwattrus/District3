@@ -41,9 +41,10 @@ function loadDistrictTotalBarChart(sortedDistrictData) {
 						totalForDistrict = d.value;
 					}
 					else return ((d.value/totalForDistrict)*1000) + "px"; })
+				.attr("title", function(d) { return d.value + " learners"})
 				.text(function(d) { 
 					 if(d.title!="learners_wrote") {
-					 	return d.title + ": " + d.value;
+					 	return d.title + ": " + parseInt((d.value/totalForDistrict)*100) + "%";
 					 }
 				});
 	}
