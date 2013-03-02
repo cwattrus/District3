@@ -27,8 +27,8 @@ function loadALLDistrictTotalBarChart(sortedDistrictData) {
 
 		var malePassRate = calculatePassRate(processedMaleRates);
 		var femalePassRate = calculatePassRate(processedFemaleRates);
-		console.log(totalCombinedLearners);
-		loadMaleFemaleComparisonCharts(malePassRate, femalePassRate, totalCombinedLearners, totalMaleLearners, totalFemaleLearners);
+
+		loadMaleFemaleComparisonCharts(malePassRate, femalePassRate, totalMaleLearners, totalFemaleLearners);
 		
 	}
 }
@@ -78,22 +78,22 @@ function processRates(rawRatesData) {
 	return processedRateData;
 }
 
-function loadMaleFemaleComparisonCharts(malePassRate, femalePassRate, totalForDistrict, totalMaleLearners, totalFemaleLearners) {
+function loadMaleFemaleComparisonCharts(malePassRate, femalePassRate, totalMaleLearners, totalFemaleLearners) {
 	var maleFemaleComparisonBar = d3.select("body")
 			.append("div")
 			.attr("class", "progress chart")
-			.style("width", "1100px")
+			.style("width", "1000px")
 
 		maleFemaleComparisonBar
 			.append("div")
 			.attr("class", "bar pass_60_69")
-			.style("width", parseInt((malePassRate/totalForDistrict)*1100) + "px")
-			.text(parseInt((malePassRate/totalMaleLearners)*100) + "% males passed")
+			.style("width", parseInt(500*(malePassRate/totalMaleLearners)) + "px")
+			.text(parseInt((malePassRate/totalMaleLearners)*100) + "% males passed");
 				
 		maleFemaleComparisonBar
 			.append("div")
-			.attr("class", "bar pass_70_79")
-			.style("width", parseInt((femalePassRate/totalForDistrict)*1100) + "px")
+			.attr("class", "bar pass_80_100")
+			.style("width", parseInt(500*(femalePassRate/totalFemaleLearners)) + "px")
 			.text(parseInt((femalePassRate/totalFemaleLearners)*100) + "% females passed");
 }
 
