@@ -14,12 +14,13 @@ function loadDistrictTotalBarChart(sortedDistrictData) {
 	for(data in sortedDistrictData) {
 		d3.select("body")
 			.append("div")
+			.attr("class", "lead")
 			.text(sortedDistrictData[data].district + " " + sortedDistrictData[data].year);
 		
 		var chart = d3.select("body")
 			.append("div")
 			.attr("class", "chart progress")
-			.style("width", "100%");
+			.style("width", "1100px");
 
 		var jsonRates = sortedDistrictData[data].rates;
 		var arrayRates = [];
