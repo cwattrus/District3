@@ -84,7 +84,7 @@ var width = 560,
 
 function loadMaleFemaleComparisonCharts(malePassRate, femalePassRate, totalMaleLearners, totalFemaleLearners) {
 	var dataset = {
-	combined : [femalePassRate, malePassRate]
+	combined : [(360*(malePassRate/totalMaleLearners)), (360*(femalePassRate/totalFemaleLearners))]
 };
 
 
