@@ -9,63 +9,75 @@ loadALLDistrictTotalBarChart(allDistrictsJSON);
 
 function loadALLDistrictTotalBarChart(sortedDistrictData) {
 	for(data in sortedDistrictData) {
-		d3.select("body")
-			.append("div")
-			.attr("class", "lead")
-			.text(sortedDistrictData[data].district + " " + sortedDistrictData[data].year);
-		
-		var chart = d3.select("body")
-			.append("div")
-			.attr("class", "chart progress")
-			.style("width", "1100px");
+		var chart = setupForSpecificDistrict(sortedDistrictData);
 
 		var combinedRates = sortedDistrictData[data].rates;
 		var maleRates = sortedDistrictData[data].male_rates;
 		var femaleRates = sortedDistrictData[data].female_rates;
 
-		var processedCombinedRates = [];
-		var processedMaleRates = [];
-		var processedFemaleRates = [];
-
-		var totalForDistrict = null;
+		var processedCombinedRates = processRates(combinedRates);
+		var processedMaleRates = processRates(maleRates);
+		var processedFemaleRates = processRates(femaleRates);
 		
-		for (var key in combinedRates) {
-			processedCombinedRates.push({title:key,value:combinedRates[key]});
-		}
+		var totalCombinedLearners = processedCombinedRates[0].value;
 
-		for (var key in maleRates) {
-			processedMaleRates.push({title:key,value:maleRates[key]});
-		}
-
-		for (var key in femaleRates) {
-			processedFemaleRates.push({title:key,value:femaleRates[key]});
-		}
-
-		chart.selectAll("div")
-			.data(processedCombinedRates)
-				.enter()
-				.append("div")
-				.attr("class", function(d) {
-					if(d.title!="learners_wrote") {
-					 	return d.title + " bar";
-					 }
-				})
-				.style("width", function(d) { 
-					if(d.title=="learners_wrote") {
-						totalForDistrict = d.value;
-					}
-					else return ((d.value/totalForDistrict)*1000) + "px"; })
-				.attr("title", function(d) { return d.value + " learners"})
-				.text(function(d) { 
-					 if(d.title!="learners_wrote") {
-					 	return d.title + ": " + parseInt((d.value/totalForDistrict)*100) + "%";
-					 }
-				});
+		showCombinedRatesDetailChart(chart, processedCombinedRates, totalCombinedLearners);
 
 		var malePassRate = calculatePassRate(processedMaleRates);
 		var femalePassRate = calculatePassRate(processedFemaleRates);
+		console.log(totalCombinedLearners);
+		loadMaleFemaleComparisonCharts(malePassRate, femalePassRate, totalCombinedLearners);
+		
+	}
+}
 
-		var maleFemaleComparisonBar = d3.select("body")
+function showCombinedRatesDetailChart(chart, combinedRateData, totalLearnersInDistrict) {
+	chart.selectAll("div")
+		.data(combinedRateData)
+			.enter()
+			.append("div")
+			.attr("class", function(d) {
+				if(d.title!="learners_wrote") {
+				 	return d.title + " bar";
+				 }
+			})
+			.style("width", function(d) { 
+				if(d.title=="learners_wrote") {
+					totalLearnersInDistrict = d.value;
+				}
+				else return ((d.value/totalLearnersInDistrict)*1000) + "px"; })
+			.attr("title", function(d) { return d.value + " learners"})
+			.text(function(d) { 
+				 if(d.title!="learners_wrote") {
+				 	return d.title + ": " + parseInt((d.value/totalLearnersInDistrict)*100) + "%";
+				 }
+			});
+
+}
+function setupForSpecificDistrict(dataForDistrict) {
+	d3.select("body")
+		.append("div")
+		.attr("class", "lead")
+		.text(dataForDistrict[data].district + " " + dataForDistrict[data].year);
+		
+	var chart = d3.select("body")
+		.append("div")
+		.attr("class", "chart progress")
+		.style("width", "1100px");
+
+	return chart;
+}
+
+function processRates(rawRatesData) {
+	var processedRateData = [];
+	for (var key in rawRatesData) {
+		processedRateData.push({title:key,value:rawRatesData[key]});
+	}
+	return processedRateData;
+}
+
+function loadMaleFemaleComparisonCharts(malePassRate, femalePassRate, totalForDistrict) {
+	var maleFemaleComparisonBar = d3.select("body")
 			.append("div")
 			.attr("class", "progress chart")
 			.style("width", "1100px")
@@ -81,15 +93,12 @@ function loadALLDistrictTotalBarChart(sortedDistrictData) {
 			.attr("class", "bar pass_70_79")
 			.style("width", parseInt((femalePassRate/totalForDistrict)*1100) + "px")
 			.text(parseInt((femalePassRate/totalForDistrict)*100) + "% females passed");
-		
-	}
-}
-
-function compareDistrict(first_district, second_district, sort_parameter) {
-  return first_district[sort_parameter] == second_district[sort_parameter] ? 0 : (first_district[sort_parameter] < second_district[sort_parameter] ? -1 : 1);
 }
 
 function calculatePassRate(rateData) {
 	return rateData[0].value - rateData[1].value;
 }
 
+function compareDistrict(first_district, second_district, sort_parameter) {
+  return first_district[sort_parameter] == second_district[sort_parameter] ? 0 : (first_district[sort_parameter] < second_district[sort_parameter] ? -1 : 1);
+}
