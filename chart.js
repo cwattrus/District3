@@ -8,43 +8,51 @@ jsonData.sort(function(district1, district2){
   return compared == 0 ? -compareDistrict(district1,  district2, "year") : compared;
 });
 
-for(data in jsonData) {
-	d3.select("body")
-		.append("div")
-		.text(jsonData[data].district + " " + jsonData[data].year);
-	
-	var chart = d3.select("body")
-		.append("div")
-		.attr("class", "chart");
+loadDistrictTotalBarChart(jsonData);
 
-	var jsonRates = jsonData[data].rates;
-	var arrayRates = [];
-	var totalForDistrict = null;
-	
-	for (var key in jsonRates) {
-		arrayRates.push({title:key,value:jsonRates[key]});
-	}
-
-	chart.selectAll("div")
-		.data(arrayRates)
-			.enter()
+function loadDistrictTotalBarChart(sortedDistrictData) {
+	for(data in sortedDistrictData) {
+		d3.select("body")
 			.append("div")
-			.style("width", function(d) { 
-				if(d.title=="learners_wrote") {
-					totalForDistrict = d.value;
-					console.log(totalForDistrict);
-					return "300px";
-				}
-				else return ((d.value/totalForDistrict)*2000) + "px"; })
-			.style("background-color", function(d) {
-				if(d.title=="learners_wrote") {
-					return "#000000";
-				}
-			})
-			.text(function(d) { 
-				 return d.title + ": " + d.value;
-			});
+			.text(sortedDistrictData[data].district + " " + sortedDistrictData[data].year);
+		
+		var chart = d3.select("body")
+			.append("div")
+			.attr("class", "chart progress")
+			.style("width", "100%");
+
+		var jsonRates = sortedDistrictData[data].rates;
+		var arrayRates = [];
+		var totalForDistrict = null;
+		
+		for (var key in jsonRates) {
+			arrayRates.push({title:key,value:jsonRates[key]});
+		}
+
+		chart.selectAll("div")
+			.data(arrayRates)
+				.enter()
+				.append("div")
+				.attr("class", function(d) {
+					if(d.title!="learners_wrote") {
+					 	return d.title + " bar";
+					 }
+				})
+				.style("width", function(d) { 
+					if(d.title=="learners_wrote") {
+						totalForDistrict = d.value;
+					}
+					else return ((d.value/totalForDistrict)*1000) + "px"; })
+				.text(function(d) { 
+					 if(d.title!="learners_wrote") {
+					 	return d.title + ": " + d.value;
+					 }
+				});
+	}
 }
+
+
+
 
 function compareDistrict(first_district, second_district, sort_parameter) {
   return first_district[sort_parameter] == second_district[sort_parameter] ? 0 : (first_district[sort_parameter] < second_district[sort_parameter] ? -1 : 1);
