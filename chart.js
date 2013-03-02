@@ -3,11 +3,15 @@ var jsonData = [{"district":"Port Elizabeth","year":"2011","rates":{"learners_wr
 var keyLabel = null;
 var value = null;
 
+jsonData.sort(function(district1, district2){
+  var compared = compareDistrict(district1,  district2, "district")
+  return compared == 0 ? -compareDistrict(district1,  district2, "year") : compared;
+});
+
 for(data in jsonData) {
 	d3.select("body")
 		.append("div")
-		.text(jsonData[data].district);
-
+		.text(jsonData[data].district + " " + jsonData[data].year);
 	
 	var chart = d3.select("body")
 		.append("div")
@@ -31,7 +35,7 @@ for(data in jsonData) {
 					console.log(totalForDistrict);
 					return "300px";
 				}
-				else return ((d.value/totalForDistrict)*1000) + "px"; })
+				else return ((d.value/totalForDistrict)*2000) + "px"; })
 			.style("background-color", function(d) {
 				if(d.title=="learners_wrote") {
 					return "#000000";
@@ -41,3 +45,8 @@ for(data in jsonData) {
 				 return d.title + ": " + d.value;
 			});
 }
+
+function compareDistrict(first_district, second_district, sort_parameter) {
+  return first_district[sort_parameter] == second_district[sort_parameter] ? 0 : (first_district[sort_parameter] < second_district[sort_parameter] ? -1 : 1);
+}
+
