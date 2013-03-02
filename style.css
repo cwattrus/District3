@@ -508,3 +508,6 @@ input[type="button"].btn-block {
   background-color: #080808 \9;
 }
 
+.pull-right {
+  margin-left: 10px;
+}
